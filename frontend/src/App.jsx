@@ -2,10 +2,23 @@ import { useState } from "react";
 
 function App() {
   const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
 
-  const handleSearch = () => {
-  console.log("Searching for:", city)
+  const handleSearch = async () => {
+    const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
+    const url = 
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    console.log(url)
+
+    const response = await fetch(url)
+    const data = await response.json();
+
+    console.log(data)
+    setWeather(data)
   };
+
 
 
   return (
@@ -23,6 +36,13 @@ function App() {
       </div>
 
       <p>You typed: {city}</p>
+
+      {weather && (
+        <div>
+          <h2>{weather.name}</h2>
+          <p>Temperature: {weather.main.temp}C</p>
+        </div>
+      )}
     </main>
   );
 }
