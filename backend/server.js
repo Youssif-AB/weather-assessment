@@ -60,6 +60,69 @@ app.post("/api/searches", (req,res) => {
     );
 });
 
+app.delete("/api/searches/:id", (req, res) => {
+    const {id} = req.params;
+
+    db.run(
+        "DELETE FROM searches where id = ?",
+        [id],
+        function (err) {
+            if (err) {
+                res.status(500).json({error:err.message});
+                return;
+            }
+
+            if (this.changes === 0) {
+                res.status(404).json({ error:"Search not found."});
+                return;
+            }
+        
+
+            res.json({
+                message:"Search deleted successfully"
+            });
+        }
+    );
+});
+
+app.put("/api/searches/:id", (req,res) => {
+    const{id} = req.params;
+    const{location, temperature, description} = req.body;
+
+    if (!location) {
+        res.status(400).json({error:"Location is required"});
+        return;
+    }
+
+    db.run(
+        `
+        UPDATE searches
+        SET location = ?, temperature = ?, description = ?
+        where id = ?
+        `,
+        [location, temperature, description, id],
+        function (err) {
+            if (err) {
+                res.status(500).json({error:err.message});
+                return;
+            }
+
+            if (this.change === 0) {
+                res.status(400).json({error:"Search not found"});
+                return;
+            }
+
+            res.json({
+                id,
+                location,
+                temperature,
+                description,
+            });
+        }
+
+    );
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
