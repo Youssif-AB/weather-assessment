@@ -4,6 +4,20 @@ function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
+
+  const fetchWeather = async (url) => {
+    const response = await fetch(url)
+    const data = await response.json()
+
+    if (!response.ok) {
+      setError(data.message);
+      setWeather(null);
+      return;
+    }
+
+    setWeather(data);
+    setError("");
+  };
  
   const handleSearch = async () => {
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -11,20 +25,26 @@ function App() {
     const url = 
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-    console.log(url)
+    await fetchWeather(url)
+  };
 
-    const response = await fetch(url)
-    const data = await response.json();
+  const handleCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-    if (!response.ok) {
-      setError(data.message);
-      setWeather(null)
-      return;
-    }
+        const url = 
+      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+      
+        await fetchWeather(url)
+      },
 
-    console.log(data)
-    setWeather(data)
-    setError("")
+      () => {
+        setError("Unable to get your current location.");
+      }
+    );
   };
 
 
@@ -41,6 +61,8 @@ function App() {
         />
 
         <button onClick={handleSearch}> Search</button>
+
+        <button onClick={handleCurrentLocation}> Use My Location</button>
         {error && <p>{error}</p>}
       </div>
 
