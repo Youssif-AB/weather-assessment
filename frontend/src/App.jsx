@@ -11,6 +11,7 @@ function App() {
     const data = await response.json();
 
     if (!response.ok) {
+      setForecast([]);
       return;   
     }
 
@@ -28,6 +29,7 @@ function App() {
     if (!response.ok) {
       setError(data.message);
       setWeather(null);
+      setForecast([]);
       return;
     }
 
@@ -36,6 +38,14 @@ function App() {
   };
  
   const handleSearch = async () => {
+
+    if (!city.trim()) {
+      setError("Please enter a city.");
+      setWeather(null);
+      setForecast([]);
+      return;
+    }
+    
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
     const weatherUrl = 
@@ -57,10 +67,16 @@ function App() {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        const url = 
+        const weatherUrl = 
       `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
       
-        await fetchWeather(url)
+      const forecastUrl =
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+      
+        await fetchWeather(weatherUrl)
+        await fetchForecast(forecastUrl)
+        setError("");
       },
 
       () => {
@@ -94,8 +110,8 @@ function App() {
         <div>
           <h2>{weather.name}</h2>
           <h3>{weather.weather[0].description}</h3>
-          <p>Temperature: {weather.main.temp}C</p>
-          <p>Real Feel: {weather.main.feels_like}</p>
+          <p>Temperature: {weather.main.temp}°C</p>
+          <p>Real Feel: {weather.main.feels_like}°C</p>
 
         </div>
       )}
@@ -106,8 +122,12 @@ function App() {
 
           {forecast.map((day) => (
             <div key={day.dt}>
-              <p>{day.dt}</p>
-              <p>{day.main.temp}</p>
+              <p>
+                {new Date(day.dt * 1000).toLocaleDateString("en-US", {
+                  weekday: "short",
+                })}
+              </p>
+              <p>{day.main.temp}°C</p>
               <p>{day.weather[0].description}</p>
             </div>
           ))}
