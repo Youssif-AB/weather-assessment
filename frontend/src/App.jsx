@@ -189,8 +189,8 @@ function App() {
           />
 
           <h3>{weather.weather[0].description}</h3>
-          <p>Temperature: {weather.main.temp}°C</p>
-          <p>Real Feel: {weather.main.feels_like}°C</p>
+          <p>🌡Temperature: {weather.main.temp  }°C</p>
+          <p>🤔Real Feel: {weather.main.feels_like}°C</p>
 
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${weather.name}`}
@@ -247,6 +247,22 @@ function App() {
         </div>
         </div>
       )}
+
+      <footer className="footer">
+        <h3>Youssif Abdelaziz</h3>
+
+        <p>
+          This weather application was built using React, Express, SQLite,
+          and the OpenWeather API.
+        </p>
+
+        <h4>About PM Accelerator</h4>
+
+        <p>
+          The Product Manager Accelerator Program is designed to support PM professionals through every stage of their careers. From students looking for entry-level jobs to Directors looking to take on a leadership role, our program has helped over hundreds of students fulfill their career aspirations. 
+          Our Product Manager Accelerator community are ambitious and committed. Through our program they have learnt, honed and developed new PM and leadership skills, giving them a strong foundation for their future endeavors.
+        </p>
+    </footer>
     </main>
   );
 }
