@@ -15,6 +15,21 @@ app.get("/", (req, res) => {
     res.send("Weather backend is running");
 });
 
+app.get("/api/export/json", (req, res) => {
+    db.all("SELECT * FROM searches ORDER BY created_at DESC", [], (err, rows) => {
+        if (err) {
+            res.status(500).json({error:err.message});
+            return;
+        }
+
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Content-Disposition", 
+            "attachment; filename=weather-searches.json");
+
+        res.send(JSON.stringify(rows, null, 2));
+    });
+});
+
 app.get("/api/searches", (req, res) => {
     db.all(
         "SELECT * FROM searches ORDER BY created_at DESC",
