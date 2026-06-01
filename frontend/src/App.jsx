@@ -1,3 +1,4 @@
+import "./App.css"
 import { useState } from "react";
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
     const weatherURL = 
     `https://api.openweathermap.org/data/2.5/weather?q=${search.location}&appid=${apiKey}&units=metric`;
 
-    const respone = await fetch(weatherURL);
+    const response = await fetch(weatherURL);
     const data = await response.json();
 
     if (!response.ok) {
@@ -124,6 +125,7 @@ function App() {
 
     await fetchWeather(weatherUrl)
     await fetchForecast(forecastUrl)
+    setSearchHistory([])
   };
 
   const handleCurrentLocation = () => {
@@ -142,6 +144,7 @@ function App() {
       
         await fetchWeather(weatherUrl)
         await fetchForecast(forecastUrl)
+        setSearchHistory([])
         setError("");
       },
 
@@ -157,12 +160,13 @@ function App() {
     <main>
       <h1>Weather App</h1>
 
-      <div>
         <input type="text"
         placeholder="Enter a city"
         value={city}
         onChange={(event) => setCity(event.target.value)}
         />
+
+      <div className="main-card">
 
         <button onClick={handleSearch}> Search</button>
 
@@ -174,29 +178,47 @@ function App() {
         {error && <p>{error}</p>}
       </div>
 
-      <p>You typed: {city}</p>
-
+      <div className="weather-forecast">
       {weather && (
-        <div>
+        <div className="weather-card">
           <h2>{weather.name}</h2>
+
+          <img className="weather-icon" 
+          src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+          alt={weather.weather[0].description}
+          />
+
           <h3>{weather.weather[0].description}</h3>
           <p>Temperature: {weather.main.temp}°C</p>
           <p>Real Feel: {weather.main.feels_like}°C</p>
+
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${weather.name}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View on Google Maps
+          </a>
 
         </div>
       )}
 
       {forecast.length > 0 && (
-        <div>
+        <div className="forecast-grid">
           <h2>5 Day Forecast</h2>
 
           {forecast.map((day) => (
-            <div key={day.dt}>
+            <div className="forecast-card" key={day.dt}>
               <p>
                 {new Date(day.dt * 1000).toLocaleDateString("en-US", {
                   weekday: "short",
                 })}
               </p>
+
+
+              <img className="forecast-icon" src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`} alt = {day.weather[0].description}/>
+
+
               <p>{day.main.temp}°C</p>
               <p>{day.weather[0].description}</p>
             </div>
@@ -204,19 +226,25 @@ function App() {
         </div>
       )}
 
-      {searchHistory.length > 0 && (
-        <div>
-          <h2>Search History</h2>
+      </div>
 
+      {searchHistory.length > 0 && (
+        <div className="history-grid">
+          <h2>Search History</h2>
+          <div className="history-list">
           {searchHistory.map((search) => (
-            <div key={search.id}>
+            <div className="history-card" key={search.id}>
               <p>{search.location}</p>
               <p>{search.temperature}</p>
               <p>{search.description}</p>
+
+              <div className="history-buttons">
               <button onClick={() => deleteSearch(search.id)}>Delete</button>
               <button onClick={() => updateSearch(search)}>Refresh Weather</button>
+              </div>
             </div>
           ))}
+        </div>
         </div>
       )}
     </main>
