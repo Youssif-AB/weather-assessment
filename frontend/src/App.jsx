@@ -7,6 +7,36 @@ function App() {
   const [forecast, setForecast] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
 
+  const updateSearch = async (search) => {
+    const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
+    const weatherURL = 
+    `https://api.openweathermap.org/data/2.5/weather?q=${search.location}&appid=${apiKey}&units=metric`;
+
+    const respone = await fetch(weatherURL);
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message || "Could not refresh this saved search.");
+      return;
+    }
+
+    await fetch(`http://localhost:5000/api/searches/${search.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        location: search.location,
+        temperature: data.main.temp,
+        description: data.weather[0].description,
+      }),
+    });
+
+    setError("");
+    fetchSearchHistory();
+  }
+
   const exportSearches = () => {
     window.location.href = "http://localhost:5000/api/export/json";
   };
@@ -184,6 +214,7 @@ function App() {
               <p>{search.temperature}</p>
               <p>{search.description}</p>
               <button onClick={() => deleteSearch(search.id)}>Delete</button>
+              <button onClick={() => updateSearch(search)}>Refresh Weather</button>
             </div>
           ))}
         </div>
