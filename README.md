@@ -1,3 +1,5 @@
+<img width="2041" height="1499" alt="image" src="https://github.com/user-attachments/assets/cf5d3d74-0fb4-422e-a06f-7c7633da121b" />
+
 # Weather App Technical Assessment
 
 Built by Youssif Abdelaziz
